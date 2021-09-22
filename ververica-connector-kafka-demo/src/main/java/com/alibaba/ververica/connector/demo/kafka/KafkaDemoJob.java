@@ -27,7 +27,6 @@ import org.apache.flink.kafka.shaded.org.apache.kafka.clients.consumer.ConsumerC
 import org.apache.flink.kafka.shaded.org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.flink.streaming.connectors.kafka.internals.KafkaSerializationSchemaWrapper;
 
@@ -40,17 +39,10 @@ import java.util.Properties;
  */
 public class KafkaDemoJob {
 
-    @SuppressWarnings("ConstantConditions")
     public static void main(String[] args) throws Exception {
 
         // Set up the streaming execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
-        // Whether to use new Source API
-        // Currently we have two kinds of Kafka source connector: KafkaSource and
-        // FlinkKafkaConsumer, and we suggest to
-        // use KafkaSource (new API) after upgrading to VVR 4.0.
-        boolean useNewApi = false;
 
         // Required configurations for connecting to Kafka
         String bootstrapServers = "localhost:9092";
@@ -67,27 +59,17 @@ public class KafkaDemoJob {
         kafkaProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
         // Build Kafka source
-        if (useNewApi) {
-            // with new Source API based on FLIP-27
-            KafkaSource<String> kafkaSource =
-                    KafkaSource.<String>builder()
-                            .setBootstrapServers(bootstrapServers)
-                            .setTopics(inputTopic)
-                            .setStartingOffsets(OffsetsInitializer.earliest())
-                            .setGroupId(groupId)
-                            .setDeserializer(
-                                    KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
-                            .build();
-            source = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "Kafka Source");
-
-        } else {
-            // with the legacy SourceFunction API
-            FlinkKafkaConsumer<String> kafkaConsumer =
-                    new FlinkKafkaConsumer<>(inputTopic, new SimpleStringSchema(), kafkaProperties);
-            kafkaConsumer.setStartFromEarliest();
-            source = env.addSource(kafkaConsumer);
-            source.name("FlinkKafkaConsumer");
-        }
+        // with new Source API based on FLIP-27
+        KafkaSource<String> kafkaSource =
+                KafkaSource.<String>builder()
+                        .setBootstrapServers(bootstrapServers)
+                        .setTopics(inputTopic)
+                        .setStartingOffsets(OffsetsInitializer.earliest())
+                        .setGroupId(groupId)
+                        .setDeserializer(
+                                KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
+                        .build();
+        source = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "Kafka Source");
 
         // Build Kafka sink
         FlinkKafkaProducer<String> kafkaProducer =
