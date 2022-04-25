@@ -32,6 +32,7 @@ under the License.
         <module>ververica-connector-kafka-demo</module>
         <module>ververica-connector-maxcompute-demo</module>
         <module>ververica-connector-datahub-demo</module>
+        <module>ververica-connector-hologres-demo</module>
     </modules>
 
 </project>
