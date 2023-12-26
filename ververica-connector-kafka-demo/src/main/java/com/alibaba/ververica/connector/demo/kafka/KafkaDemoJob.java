@@ -19,16 +19,16 @@
 package com.alibaba.ververica.connector.demo.kafka;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.connector.kafka.source.reader.deserializer.KafkaRecordDeserializationSchema;
 import org.apache.flink.kafka.shaded.org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.flink.kafka.shaded.org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.flink.kafka.shaded.org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.apache.flink.streaming.connectors.kafka.internals.KafkaSerializationSchemaWrapper;
 
 import java.util.Locale;
 import java.util.Properties;
@@ -53,13 +53,12 @@ public class KafkaDemoJob {
         // DataStream Source
         DataStreamSource<String> source;
 
-        // Build properties for legacy FlinkKafkaConsumer and FlinkKafkaProducer
+        // Build Kafka properties
         Properties kafkaProperties = new Properties();
         kafkaProperties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         kafkaProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
         // Build Kafka source
-        // with new Source API based on FLIP-27
         KafkaSource<String> kafkaSource =
                 KafkaSource.<String>builder()
                         .setBootstrapServers(bootstrapServers)
@@ -67,18 +66,21 @@ public class KafkaDemoJob {
                         .setStartingOffsets(OffsetsInitializer.earliest())
                         .setGroupId(groupId)
                         .setDeserializer(
-                                KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
+                                KafkaRecordDeserializationSchema.valueOnly(
+                                        StringDeserializer.class))
                         .build();
         source = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "Kafka Source");
 
         // Build Kafka sink
-        FlinkKafkaProducer<String> kafkaProducer =
-                new FlinkKafkaProducer<>(
-                        outputTopic,
-                        new KafkaSerializationSchemaWrapper<>(
-                                outputTopic, null, true, new SimpleStringSchema()),
-                        kafkaProperties,
-                        FlinkKafkaProducer.Semantic.AT_LEAST_ONCE);
+        KafkaSink<String> kafkaSink =
+                KafkaSink.<String>builder()
+                        .setKafkaProducerConfig(kafkaProperties)
+                        .setRecordSerializer(
+                                KafkaRecordSerializationSchema.builder()
+                                        .setTopic(outputTopic)
+                                        .setKafkaValueSerializer(StringSerializer.class)
+                                        .build())
+                        .build();
 
         // Append your transformations after the source
         source
@@ -86,8 +88,8 @@ public class KafkaDemoJob {
                 .map((message) -> message.toUpperCase(Locale.ROOT))
                 .name("Convert to upper case")
                 // then sink to Kafka
-                .addSink(kafkaProducer)
-                .name("FlinkKafkaProducer");
+                .sinkTo(kafkaSink)
+                .name("Kafka Sink");
 
         // Compile and submit the job
         env.execute();
