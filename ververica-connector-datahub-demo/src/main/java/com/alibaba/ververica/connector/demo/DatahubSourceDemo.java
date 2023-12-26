@@ -1,11 +1,12 @@
 package com.alibaba.ververica.connector.demo;
 
-import com.alibaba.ververica.connectors.datahub.source.DatahubSourceFunction;
-import com.aliyun.datahub.client.model.RecordEntry;
-import com.aliyun.datahub.client.model.TupleRecordData;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import com.alibaba.ververica.connectors.datahub.source.DatahubSourceFunction;
+import shaded.datahub.com.aliyun.datahub.client.model.RecordEntry;
+import shaded.datahub.com.aliyun.datahub.client.model.TupleRecordData;
 
 import java.io.Serializable;
 
@@ -18,6 +19,8 @@ public class DatahubSourceDemo implements Serializable {
     private static final String SUB_ID = "";
     private static final String ACCESS_ID = "";
     private static final String ACCESS_KEY = "";
+    private static final String RUN_MODE = "public";
+    private static final boolean ENABLE_SCHEMA_REGISTRY = false;
 
     public void runExample() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -30,6 +33,8 @@ public class DatahubSourceDemo implements Serializable {
                         SUB_ID,
                         ACCESS_ID,
                         ACCESS_KEY,
+                        RUN_MODE,
+                        ENABLE_SCHEMA_REGISTRY,
                         0,
                         1588231223000L);
         datahubSource.setRequestTimeout(30 * 1000);

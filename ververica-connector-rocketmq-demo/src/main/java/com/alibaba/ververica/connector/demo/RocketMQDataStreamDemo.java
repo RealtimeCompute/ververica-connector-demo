@@ -1,30 +1,29 @@
 package com.alibaba.ververica.connector.demo;
 
-import com.alibaba.rocketmq.client.exception.MQClientException;
-import com.alibaba.rocketmq.common.message.MessageExt;
-import com.alibaba.rocketmq.common.message.MessageQueue;
+import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import com.alibaba.ververica.connector.mq.shaded.com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.ververica.connector.mq.shaded.com.alibaba.rocketmq.common.message.MessageExt;
+import com.alibaba.ververica.connector.mq.shaded.com.alibaba.rocketmq.common.message.MessageQueue;
+import com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.MetaPullConsumer;
 import com.alibaba.ververica.connectors.common.sink.OutputFormatSinkFunction;
 import com.alibaba.ververica.connectors.metaq.MetaQConnect;
 import com.alibaba.ververica.connectors.metaq.sink.MetaQOutputFormat;
 import com.alibaba.ververica.connectors.metaq.source.legacy.MetaQSourceFunction;
-import com.taobao.metaq.client.MetaPullConsumer;
-import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import static com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.ExternConst.NAMESRV_ADDR;
+import static com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.ExternConst.PROPERTY_ACCESSKEY;
+import static com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.ExternConst.PROPERTY_INSTANCE_ID;
+import static com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.ExternConst.PROPERTY_ONS_CHANNEL;
+import static com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.ExternConst.PROPERTY_ROCKET_AUTH_ENABLED;
+import static com.alibaba.ververica.connector.mq.shaded.com.taobao.metaq.client.ExternConst.PROPERTY_SECRETKEY;
 import static com.alibaba.ververica.connectors.metaq.MetaQConnect.createConsumerInstance;
-import static com.taobao.metaq.client.ExternConst.NAMESRV_ADDR;
-import static com.taobao.metaq.client.ExternConst.PROPERTY_ACCESSKEY;
-import static com.taobao.metaq.client.ExternConst.PROPERTY_INSTANCE_ID;
-import static com.taobao.metaq.client.ExternConst.PROPERTY_ONS_CHANNEL;
-import static com.taobao.metaq.client.ExternConst.PROPERTY_ROCKET_AUTH_ENABLED;
-import static com.taobao.metaq.client.ExternConst.PROPERTY_SECRETKEY;
 
 /**
  * A {@link DataStream} demo that illustrates how to consume messages from RocketMQ, convert
@@ -49,8 +48,6 @@ import static com.taobao.metaq.client.ExternConst.PROPERTY_SECRETKEY;
  * </pre>
  */
 public class RocketMQDataStreamDemo {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RocketMQDataStreamDemo.class);
 
     public static void main(String[] args) throws Exception {
         // Sets up the streaming execution environment
@@ -79,9 +76,8 @@ public class RocketMQDataStreamDemo {
             Set<MessageQueue> queues = consumer.fetchSubscribeMessageQueues(sourceTopic);
             partitionCount = queues == null ? 0 : queues.size();
         } catch (MQClientException e) {
-            LOGGER.error(
-                    "Fetches RocketMQ partition count for RocketMQ source exception [{}].",
-                    e.getMessage());
+            throw new RuntimeException(
+                    "Fetches RocketMQ partition count for RocketMQ source exception", e);
         } finally {
             if (consumer != null) {
                 try {

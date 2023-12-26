@@ -1,14 +1,15 @@
 package com.alibaba.ververica.connector.demo;
 
-import com.alibaba.ververica.connectors.datahub.sink.DatahubRecordConverter;
-import com.alibaba.ververica.connectors.datahub.sink.DatahubSinkFunction;
-import com.aliyun.datahub.client.model.Field;
-import com.aliyun.datahub.client.model.FieldType;
-import com.aliyun.datahub.client.model.RecordEntry;
-import com.aliyun.datahub.client.model.RecordSchema;
-import com.aliyun.datahub.client.model.TupleRecordData;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import com.alibaba.ververica.connectors.datahub.sink.DatahubRecordConverter;
+import com.alibaba.ververica.connectors.datahub.sink.DatahubSinkFunction;
+import shaded.datahub.com.aliyun.datahub.client.model.Field;
+import shaded.datahub.com.aliyun.datahub.client.model.FieldType;
+import shaded.datahub.com.aliyun.datahub.client.model.RecordEntry;
+import shaded.datahub.com.aliyun.datahub.client.model.RecordSchema;
+import shaded.datahub.com.aliyun.datahub.client.model.TupleRecordData;
 
 import java.io.Serializable;
 
@@ -19,6 +20,9 @@ public class DatahubSinkDemo implements Serializable {
     private static final String TOPIC_NAME = "";
     private static final String ACCESS_ID = "";
     private static final String ACCESS_KEY = "";
+    private static final String RUN_MODE = "public";
+    private static final boolean ENABLE_SCHEMA_REGISTRY = false;
+    private static final int SCHEMA_VERSION = -1;
 
     public void useDefaultRecordConverter() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -26,7 +30,14 @@ public class DatahubSinkDemo implements Serializable {
                 .map((MapFunction<Long, RecordEntry>) aLong -> getRecordEntry(aLong, "default:"))
                 .addSink(
                         new DatahubSinkFunction<>(
-                                ENDPOINT, PROJECT_NAME, TOPIC_NAME, ACCESS_ID, ACCESS_KEY));
+                                ENDPOINT,
+                                PROJECT_NAME,
+                                TOPIC_NAME,
+                                ACCESS_ID,
+                                ACCESS_KEY,
+                                RUN_MODE,
+                                ENABLE_SCHEMA_REGISTRY,
+                                SCHEMA_VERSION));
         env.execute();
     }
 
@@ -42,6 +53,9 @@ public class DatahubSinkDemo implements Serializable {
                                 TOPIC_NAME,
                                 ACCESS_ID,
                                 ACCESS_KEY,
+                                RUN_MODE,
+                                ENABLE_SCHEMA_REGISTRY,
+                                SCHEMA_VERSION,
                                 recordConverter));
         env.execute();
     }

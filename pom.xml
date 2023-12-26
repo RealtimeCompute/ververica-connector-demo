@@ -22,7 +22,7 @@ under the License.
 
     <groupId>com.alibaba.ververica</groupId>
     <artifactId>ververica-connector-demo</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.17-vvr-8.0.4-1</version>
 
     <name>Ververica Connector Demo : </name>
 
@@ -34,7 +34,6 @@ under the License.
         <module>ververica-connector-datahub-demo</module>
         <module>ververica-connector-hologres-demo</module>
         <module>ververica-connector-rocketmq-demo</module>
-        <module>ververica-connector-mysql-cdc-demo</module>
         <module>ververica-connector-mysql-cdc-demo</module>
     </modules>
 
