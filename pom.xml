@@ -34,6 +34,8 @@ under the License.
         <module>ververica-connector-datahub-demo</module>
         <module>ververica-connector-hologres-demo</module>
         <module>ververica-connector-rocketmq-demo</module>
+        <module>ververica-connector-mysql-cdc-demo</module>
+        <module>ververica-connector-mysql-cdc-demo</module>
     </modules>
 
 </project>
