@@ -22,7 +22,7 @@ under the License.
 
     <groupId>com.alibaba.ververica</groupId>
     <artifactId>ververica-connector-kafka-demo</artifactId>
-    <version>1.17-vvr-8.0.4-1</version>
+    <version>1.17-vvr-8.0.8</version>
     <packaging>jar</packaging>
 
     <name>Ververica Connector Demo : Kafka</name>
@@ -30,7 +30,7 @@ under the License.
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flink.version>1.17.1</flink.version>
-        <vvr.version>1.17-vvr-8.0.4-1</vvr.version>
+        <vvr.version>1.17-vvr-8.0.8</vvr.version>
         <target.java.version>1.8</target.java.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>

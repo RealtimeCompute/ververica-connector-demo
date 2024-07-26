@@ -3,7 +3,7 @@
 Ververica DataStream Connector 样例代码合集
 
 ## 支持版本
-Demo 基于阿里云实时计算 Flink 版引擎 VVR 8.0.4 版本，对应 Apache Flink 版本 1.17.1
+Demo 基于阿里云实时计算 Flink 版引擎 VVR 8.0.8 版本，对应 Apache Flink 版本 1.17.1
 
 ## Connector 列表
 - [Datahub](https://help.aliyun.com/zh/flink/developer-reference/datahub-connector#section-kqf-vre-chj)
