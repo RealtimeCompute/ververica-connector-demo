@@ -13,3 +13,4 @@ Demo 基于阿里云实时计算 Flink 版引擎 VVR 8.0.11 版本，对应 Apac
 - [MySQL CDC](https://help.aliyun.com/zh/flink/developer-reference/mysql-connector#section-7ot-i9o-dpz)
 - [RocketMQ](https://help.aliyun.com/zh/flink/developer-reference/apsaramq-for-rocketmq-connector#section-19l-n0z-vn8)
 - [StarRocks](https://help.aliyun.com/zh/flink/developer-reference/starrocks-connector#section-crp-ubs-gkc)
+- [Elasticsearch](https://help.aliyun.com/zh/flink/developer-reference/elasticsearch-connector#section-mr7-whk-0e2)
