@@ -37,6 +37,7 @@ under the License.
         <module>ververica-connector-mysql-cdc-demo</module>
         <module>ververica-connector-starrocks-demo</module>
         <module>ververica-connector-elasticsearch-demo</module>
+        <module>ververica-connector-mongodb-demo</module>
     </modules>
 
 </project>
